@@ -3,6 +3,7 @@ Mathematiques_Niveau1
 4
 Parmi ces nombres lesquels sont premiers ?
 5
+4
 2	1
 4	0
 7	1
@@ -10,16 +11,19 @@ Parmi ces nombres lesquels sont premiers ?
 13	1
 Quelles sont les proprietes d un carre ?
 4
+4
 Quatre cotes egaux	1
 Diagonales perpendiculaires	1
 Angles de 60 degres	0
 Quatre angles droits	1
 Formules correctes pour l aire d un triangle ?
 3
+4
 base x hauteur divise par 2	1
 base x hauteur	0
 entre parentheses base x hauteur divise par 2	1
 Entiers solutions de x au carre = 25 ?
+4
 4
 -5	1
 0	0
