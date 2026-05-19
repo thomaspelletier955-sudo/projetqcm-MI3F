@@ -67,7 +67,7 @@ static void passer_qcm(const QCM *qcm) {
     int    repondu[MAX_QUESTIONS];
     char   buf[8];
     int    index, coche;
-    double pts, note = 0.0;
+    double note = 0.0;
 
     memset(rep,     0, sizeof(rep));
     memset(repondu, 0, sizeof(repondu));
@@ -127,7 +127,6 @@ static void passer_qcm(const QCM *qcm) {
     }
 
 /* Calcul et affichage de la note */
-    pts = (double)NOTE_MAX / qcm->nb_questions;
     printf("\n"); sep();
     printf(FBLEU BLANC GRAS " CORRECTION " RESET "\n"); sep();
     for (i = 0; i < qcm->nb_questions; i++) {
