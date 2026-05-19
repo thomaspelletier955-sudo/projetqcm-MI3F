@@ -12,7 +12,7 @@ make
 
 ### Menu principal
 `1` Mode Etudiant  : passer un QCM
-`2` Mode Enseignant : creer un QCM (mot de passe : `cytech2025`)
+`2` Mode Enseignant : creer un QCM (mot de passe : `cytech2026`)
 `3` Quitter
 
 ### Mode Etudiant
