@@ -13,6 +13,7 @@
 #define MAX_QUESTIONS    50
 #define MAX_QCM          20
 #define NOTE_MAX         20
+#define MAX_POINT        100
 
 /* Couleur terminal */
 #define RESET  "\033[0m"
@@ -33,6 +34,7 @@ typedef struct {
     int  nb_propositions;
     int  bonnes_reponses[MAX_PROPOSITIONS];
     int  nb_bonnes_reponses;
+    float nb_point_question;
 } Question;
 
 /* Structure d un QCM complet */
