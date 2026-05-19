@@ -45,6 +45,7 @@ static int charger_qcm(const char *nom, QCM *qcm) {
         Question *q = &qcm->questions[i];
         fscanf(f, " %127[^\n]\n", q->intitule);
         fscanf(f, "%d\n", &q->nb_propositions);
+        fscanf(f, "%f\n", &q->nb_point_question);
         for (j = 0; j < q->nb_propositions; j++) {
             fgets(tampon, sizeof(tampon), f);
             tampon[strcspn(tampon, "\n")] = '\0';
@@ -85,6 +86,7 @@ static void passer_qcm(const QCM *qcm) {
 
         /* Affichage de la question */
         printf(BLEU GRAS "\nQuestion %d : " RESET GRAS "%s\n" RESET, i+1, q->intitule);
+        printf(BLEU GRAS "\nNb point : " RESET GRAS "%f\n" RESET, q->nb_point_question);
         for (j = 0; j < q->nb_propositions; j++)
             printf(CYAN "  [%c] " RESET "%s\n", 'A'+j, q->propositions[j]);
 
@@ -124,35 +126,84 @@ static void passer_qcm(const QCM *qcm) {
         }
     }
 
-    /* Calcul et affichage de la note */
+/* Calcul et affichage de la note */
     pts = (double)NOTE_MAX / qcm->nb_questions;
     printf("\n"); sep();
     printf(FBLEU BLANC GRAS " CORRECTION " RESET "\n"); sep();
-
     for (i = 0; i < qcm->nb_questions; i++) {
         const Question *q = &qcm->questions[i];
-        int correct=1, mauvaise=0;
-        for (j = 0; j < q->nb_propositions; j++) {
-            if (rep[i][j] != q->bonnes_reponses[j]) {
-                correct=0;
-                if (rep[i][j]==1 && q->bonnes_reponses[j]==0) mauvaise=1;
+        int correct = 1, mauvaise = 0;
+        int nb_correctes = 0;
+
+        if (!qcm->reponses_multiples) {
+            /* Mode reponse unique : on cherche l index coche */
+            int idx = -1;
+            for (j = 0; j < q->nb_propositions; j++)
+                if (rep[i][j] == 1) { idx = j; break; }
+            if (idx == -1) {
+                correct = 0;
+            } else if (q->bonnes_reponses[idx]) {
+                correct = 1;
+                nb_correctes = 1;
+            } else {
+                correct = 0;
+                mauvaise = 1;
+            }
+        } else {
+            /* Mode reponses multiples : comparaison complete */
+            for (j = 0; j < q->nb_propositions; j++) {
+                if (rep[i][j] != q->bonnes_reponses[j]) {
+                    correct = 0;
+                    if (rep[i][j]==1 && q->bonnes_reponses[j]==0) mauvaise = 1;
+                }
+                if (rep[i][j]==1 && q->bonnes_reponses[j]==1) nb_correctes++;
             }
         }
+
+        float gain = (q->nb_bonnes_reponses > 0)
+                   ? q->nb_point_question * ((float)nb_correctes / q->nb_bonnes_reponses)
+                   : 0.0f;
+
+        float penalite = 0.0f;
+        if (qcm->points_negatifs && mauvaise)
+            penalite = q->nb_point_question / 2.0f;
+
+        gain -= penalite;
+        if (gain < 0.0f) gain = 0.0f;
+
         printf(BLEU "Q%d : " RESET, i+1);
-        if      (!repondu[i])                        printf(JAUNE "Passee\n" RESET);
-        else if (correct)  { note+=pts;              printf(VERT  "Correcte  (+%.2f pts)\n" RESET, pts); }
-        else if (qcm->points_negatifs && mauvaise) { note-=pts/2; printf(ROUGE "Incorrecte (-%.2f pts)\n" RESET, pts/2); }
-        else                                         printf(ROUGE "Incorrecte (0 pt)\n" RESET);
+
+        if (!repondu[i]) {
+            printf(JAUNE "Passee\n" RESET);
+        } else if (correct) {
+            note += gain;
+            printf(VERT "Correcte  (+%.2f pts)\n" RESET, gain);
+        } else if (qcm->points_negatifs && mauvaise) {
+            note += gain;
+            printf(ROUGE "Incorrecte (+%.2f pts, penalite -%.2f pts)\n" RESET,
+                   gain + penalite, penalite);
+        } else if (nb_correctes > 0) {
+            note += gain;
+            printf(JAUNE "Partielle (+%.2f / %.0f pts)\n" RESET, gain, q->nb_point_question);
+        } else {
+            printf(ROUGE "Incorrecte (0 pt)\n" RESET);
+        }
     }
 
     if (note < 0.0) note = 0.0;
+
+    float note_max = 0.0f;
+    for (i = 0; i < qcm->nb_questions; i++)
+        note_max += qcm->questions[i].nb_point_question;
+
+    float note_sur_20 = (note_max > 0.0f) ? (note / note_max) * NOTE_MAX : 0.0f;
+
     sep();
     printf(GRAS "  NOTE FINALE : ");
-    printf("%s%.2f / %d\n" RESET, note>=10?VERT:ROUGE, note, NOTE_MAX);
+    printf("%s%.2f / %d\n" RESET, note_sur_20 >= 10.0f ? VERT : ROUGE, note_sur_20, NOTE_MAX);
     sep();
     attendre();
 }
-
 void menu_etudiant(void) {
     char noms[MAX_QCM][MAX_NOM];
     int  nb, choix, i;
