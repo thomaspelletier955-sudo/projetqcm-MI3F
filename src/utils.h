@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 /* Constantes */
-#define MOT_DE_PASSE     "cytech2025"
+#define MOT_DE_PASSE     "cytech2026"
 #define DOSSIER_QCM      "qcm/"
 #define FICHIER_INDEX    "qcm/index.txt"
 #define MAX_NOM          64
