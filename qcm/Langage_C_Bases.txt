@@ -3,26 +3,31 @@ Langage_C_Bases
 5
 Quelle fonction affiche du texte en C ?
 4
+4
 print()	0
 echo()	0
 printf()	1
 display()	0
 Quelle directive definit une constante en C ?
 3
+4
 #include	0
 #define	1
 #const	0
 Que retourne malloc en cas d echec ?
 3
+4
 0	0
 -1	0
 NULL	1
 Bon prototype de main sans arguments ?
 3
+4
 void main()	0
 int main(void)	1
 main(int)	0
 Que fait free(p) en C ?
+4
 4
 Affiche la valeur de p	0
 Libere la memoire allouee pointee par p	1
