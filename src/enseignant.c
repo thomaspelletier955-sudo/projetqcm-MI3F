@@ -48,7 +48,7 @@ static int sauvegarder_qcm(const QCM *qcm) {
     /* Questions */
     for (i = 0; i < qcm->nb_questions; i++) {
         const Question *q = &qcm->questions[i];
-        fprintf(f, "%s\n%d\n", q->intitule, q->nb_propositions);
+        fprintf(f, "%s\n%d\n%f\n", q->intitule, q->nb_propositions,q->nb_point_question);
         for (j = 0; j < q->nb_propositions; j++)
             fprintf(f, "%s\t%d\n", q->propositions[j], q->bonnes_reponses[j]);
     }
@@ -82,7 +82,17 @@ static void saisir_question(Question *q, int reponses_multiples) {
         if (q->nb_propositions < 2 || q->nb_propositions > MAX_PROPOSITIONS)
             erreur("Entrez un nombre entre 2 et 6.");
     } while (q->nb_propositions < 2 || q->nb_propositions > MAX_PROPOSITIONS);
-
+    
+    /* nombre de point par question */
+    do {
+        printf(CYAN "  Nombre de point pour cette question(0 a %d) : " RESET, MAX_POINT);
+        q->nb_point_question = lire_int();
+        if (q->nb_point_question < 0 || q->nb_point_question > MAX_POINT)
+            erreur("Entrez un nombre entre 0 et 100.");
+    } while (q->nb_point_question < 0 || q->nb_point_question > MAX_POINT);
+    
+    
+    
     /* Texte de chaque proposition */
     for (i = 0; i < q->nb_propositions; i++) {
         printf(CYAN "  Proposition %c : " RESET, 'A' + i);
