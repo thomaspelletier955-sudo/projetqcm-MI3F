@@ -88,7 +88,7 @@ static void saisir_question(Question *q, int reponses_multiples) {
         printf(CYAN "  Nombre de point pour cette question(0 a %d) : " RESET, MAX_POINT);
         q->nb_point_question = lire_int();
         if (q->nb_point_question < 0 || q->nb_point_question > MAX_POINT)
-            erreur("Entrez un nombre entre 0 et 100.");
+            erreur("Entrez un nombre entier entre 0 et 100.");
     } while (q->nb_point_question < 0 || q->nb_point_question > MAX_POINT);
     
     
